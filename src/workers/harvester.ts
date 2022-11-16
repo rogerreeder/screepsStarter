@@ -1,0 +1,3 @@
+class Harvester {
+    name: string = "";
+}
