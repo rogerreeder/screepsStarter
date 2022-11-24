@@ -1,44 +1,43 @@
-import { AntMemory } from "classes/antMemory";
 
 export class CreepsManager {
-    public static manageCreep(creepKey:string){
-        var creep = Game.creeps[creepKey];
-        var sources = creep.room.find(FIND_SOURCES);
-        var spawns = creep.room.find(FIND_MY_SPAWNS);
-        var controller = creep.room.controller;
-        if(!creep.memory)
-            creep.memory = new AntMemory();
-        var cp = <AntMemory> creep.memory;
-        if(!cp.target)
-            cp.target = sources[Math.floor(Math.random() * sources.length)].id;
-        if(!(cp.action))
-            cp.action = "HARVEST";
-        if(cp.action === "HARVEST" && creep.store.getFreeCapacity() == 0)
-            cp.action = Math.floor(Math.random() * 4) == 0 ? "REFILL" : "UPGRADE";
-        if(cp.action === "UPGRADE" && creep.store.getUsedCapacity() == 0)
-            cp.action = "HARVEST";
-        if(cp.action === "REFILL" && creep.store.getUsedCapacity() == 0)
-            cp.action = "HARVEST";
-        var source:Source = <Source>Game.getObjectById(cp.target);
-        switch(cp.action) {
-            case "HARVEST":
-                if(source){
-                    creep.harvest(source);
-                    creep.moveTo(source.pos);
+    public static manageCreep(creep:Creep){
+        let pathways = creep.room.memory.pathways;
+        var reverse = Game.time % 4 == 0;
+        if(creep.memory === undefined)
+            creep.memory = new CreepMemory();
+        let cMem = creep.memory;
+        if(creep.room.memory.hostiles.length > 0 && creep.getActiveBodyparts(ATTACK) > 0){
+            creep.moveTo(creep.room.memory.hostiles[0]);
+            creep.attack(creep.room.memory.hostiles[0]);
+        }
+        if(creep.room.memory.hostiles.length > 0 && creep.getActiveBodyparts(HEAL) > 0){
+                var injured = creep.pos.findClosestByRange(FIND_MY_CREEPS,{
+                    filter:(c) => c.hitsMax > c.hits
+                });
+                if(injured){
+                    creep.moveTo(injured);
+                    creep.heal(injured);
                 }
-                break;
-            case "UPGRADE":
-                if(controller){
-                    creep.upgradeController(controller);
-                    creep.moveTo(controller.pos);
-                }
-                break;
-            case "REFILL":
-                if(spawns[0]){
-                    creep.transfer(spawns[0], RESOURCE_ENERGY);
-                    creep.moveTo(spawns[0].pos);
-                }
-                break;
-            }
+
+
+        }
+    }
+
+    private static PickupDroppedEnergy(creep:Creep){
+        if(creep.store.getFreeCapacity() > 0){
+            let droppedEnergy = creep.pos.findInRange(FIND_DROPPED_RESOURCES, 1, {
+                filter: (r) => r.resourceType == RESOURCE_ENERGY
+            });
+            if(droppedEnergy.length > 0)
+                creep.pickup(droppedEnergy[0]);
+        }
+    }
+
+    private static HandleNearRuin(creep:Creep){
+        let ruins = creep.pos.findInRange(FIND_RUINS, 1, {
+            filter: (r) => r.store[RESOURCE_ENERGY] > 0
+        });
+        if(ruins.length > 0)
+            creep.withdraw(ruins[0],RESOURCE_ENERGY);
     }
 }

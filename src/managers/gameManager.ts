@@ -1,16 +1,19 @@
-import { MemoryManager} from "managers/memoryManager";
-import { SpawnManager} from "managers/spawnManager";
-import { RoomManager} from "managers/roomManager";
-import { CreepsManager} from "managers/creepsManager";
+import { MemoryManager} from "./MemoryManager";
+import { RoomManager} from "./RoomManager";
+import { SpawnManager} from "./SpawnManager";
+import { CreepsManager} from "./CreepsManager";
+
+
 export class GameManager {
     public static run(){
         MemoryManager.clearMemory();
         for(var roomKey in Game.rooms)
-            RoomManager.manageRoom(roomKey);
+            RoomManager.analyzeRoom(Game.rooms[roomKey]);
         for(var spawnKey in Game.spawns)
-            SpawnManager.manageSpawn(spawnKey);
+            SpawnManager.manageSpawn(Game.spawns[spawnKey]);
         for(var creepKey in Game.creeps)
-            CreepsManager.manageCreep(creepKey);
-
+            CreepsManager.manageCreep(Game.creeps[creepKey]);
+        for(var roomKey in Game.rooms)
+            RoomManager.manageRoom(Game.rooms[roomKey]);
     }
 }

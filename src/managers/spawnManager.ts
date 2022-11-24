@@ -1,10 +1,34 @@
+import { forEach } from "lodash";
+
 export class SpawnManager{
-    public static manageSpawn(spawnKey:string){
-        var spawn = Game.spawns[spawnKey];
+    public static manageSpawn(spawn:StructureSpawn){
         var creepName =  this.GetCreepName("H");
-        var body = [WORK, CARRY, MOVE];
-        if(spawn.spawnCreep(body, creepName, { dryRun: true }) == 0)
-            spawn.spawnCreep(body, creepName);
+        var bodies = [
+             [WORK,WORK,WORK,WORK,WORK,WORK,WORK, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE]
+            ,[WORK,WORK,WORK,WORK,WORK,WORK,WORK, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE]
+            ,[WORK,WORK,WORK,WORK,WORK,WORK,WORK, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE]
+            ,[WORK,WORK,WORK,WORK,WORK,WORK,WORK, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE]
+            ,[WORK,WORK,WORK,WORK,WORK,WORK,WORK, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE]
+            ,[WORK,WORK,WORK,WORK,WORK,WORK,WORK, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE]
+            ,[WORK,WORK,WORK,WORK,WORK,WORK,WORK, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE]
+            ,[WORK,WORK,WORK,WORK,WORK,WORK,WORK, CARRY, CARRY, CARRY, CARRY, MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE]
+            ,[WORK,WORK,WORK,WORK,WORK,WORK,WORK, CARRY, CARRY, CARRY, MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE]
+            ,[WORK,WORK,WORK,WORK,WORK,WORK,WORK, CARRY, CARRY, MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE]
+            ,[WORK,WORK,WORK,WORK,WORK,WORK,WORK, CARRY, MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE]
+            ,[WORK,WORK,WORK,WORK,WORK,WORK, CARRY, MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE]
+            ,[WORK,WORK,WORK,WORK,WORK,WORK, CARRY, MOVE,MOVE,MOVE,MOVE,MOVE,MOVE]
+            ,[WORK,WORK,WORK,WORK,WORK, CARRY, MOVE,MOVE,MOVE,MOVE,MOVE,MOVE]
+            ,[WORK,WORK,WORK,WORK,WORK, CARRY, MOVE,MOVE,MOVE,MOVE,MOVE]
+            ,[WORK,WORK,WORK,WORK, CARRY, MOVE,MOVE,MOVE,MOVE]
+            ,[WORK,WORK,WORK, CARRY, MOVE,MOVE,MOVE]
+            ,[WORK,WORK,CARRY, MOVE, MOVE]
+            ,[WORK,CARRY,MOVE]
+        ];
+        if(!spawn.spawning && spawn.room.energyCapacityAvailable == spawn.room.energyAvailable)
+            bodies.forEach(function(body, index, bodies){
+                if(spawn.spawnCreep(body, creepName, { dryRun: true }) == 0)
+                    console.log(`${spawn.spawnCreep(body, creepName)}`);
+            });
     }
 
     private static GetCreepName(creepName:string):string{
